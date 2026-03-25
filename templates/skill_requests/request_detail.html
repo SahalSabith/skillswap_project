@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Skill Request Detail - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex items-center space-x-2 text-sm text-slate-500 mb-8 font-medium">
+        <a href="{% url 'accounts:dashboard' %}" class="hover:text-indigo-600 transition-colors">Dashboard</a>
+        <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+        <span class="text-slate-900 font-bold">Request Detail</span>
+    </div>
+
+    <!-- Request Header Info -->
+    <div class="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-slate-200 mb-10">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10">
+            <div class="flex items-center space-x-6">
+                <div
+                    class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-2xl border border-indigo-100 overflow-hidden">
+                    {% if user == skill_request.sender %}
+                    {% if skill_request.receiver.profile.avatar %}
+                    <img src="{{ skill_request.receiver.profile.avatar.url }}" class="w-full h-full object-cover">
+                    {% else %}<i class="fas fa-user-graduate"></i>{% endif %}
+                    {% else %}
+                    {% if skill_request.sender.profile.avatar %}
+                    <img src="{{ skill_request.sender.profile.avatar.url }}" class="w-full h-full object-cover">
+                    {% else %}<i class="fas fa-user-ninja"></i>{% endif %}
+                    {% endif %}
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Request for {{
+                        skill_request.skill.name }}</h1>
+                    <p class="text-slate-500 font-medium">Between <span class="text-slate-900 font-bold">{{
+                            skill_request.sender.full_name }}</span> and <span class="text-slate-900 font-bold">{{
+                            skill_request.receiver.full_name }}</span></p>
+                </div>
+            </div>
+            <div class="flex items-center">
+                {% if skill_request.status == 'P' %}
+                <span
+                    class="px-6 py-2 bg-amber-50 text-amber-600 font-bold rounded-xl border border-amber-100 uppercase tracking-widest text-xs">Pending</span>
+                {% elif skill_request.status == 'A' %}
+                <span
+                    class="px-6 py-2 bg-green-50 text-green-600 font-bold rounded-xl border border-green-100 uppercase tracking-widest text-xs">Accepted</span>
+                {% else %}
+                <span
+                    class="px-6 py-2 bg-red-50 text-red-600 font-bold rounded-xl border border-red-100 uppercase tracking-widest text-xs">Rejected</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if skill_request.status == 'P' and user == skill_request.receiver %}
+        <div
+            class="p-8 bg-slate-50 rounded-2xl border border-slate-200 mb-10 text-center md:text-left flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h3 class="font-bold text-slate-900 mb-1">Would you like to accept this request?</h3>
+                <p class="text-slate-500 text-sm">Accepting allows you to coordinate and share your knowledge.</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <form method="POST" action="{% url 'skill_requests:update_status' skill_request.pk 'A' %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all shadow-lg text-sm">Accept
+                        Request</button>
+                </form>
+                <form method="POST" action="{% url 'skill_requests:update_status' skill_request.pk 'R' %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="px-6 py-3 bg-white text-red-600 border border-red-100 font-bold rounded-xl hover:bg-red-50 transition-all text-sm">Reject</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <div
+            class="prose prose-slate max-w-none text-slate-600 italic border-l-4 border-indigo-500 pl-6 py-2 mb-10 bg-indigo-50/30 rounded-r-2xl">
+            "{{ skill_request.message }}"
+        </div>
+    </div>
+
+    <!-- Message Thread -->
+    <div class="space-y-6 mb-12">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center px-2">
+            <i class="fas fa-comments mr-3 text-indigo-600"></i> Conversation History
+        </h2>
+
+        <div class="space-y-4">
+            {% for msg in messages_list %}
+            <div class="flex {% if msg.sender == user %}justify-end{% else %}justify-start{% endif %}">
+                <div
+                    class="max-w-md {% if msg.sender == user %}bg-indigo-600 text-white rounded-t-2xl rounded-bl-2xl shadow-indigo-200{% else %}bg-white text-slate-700 border border-slate-200 rounded-t-2xl rounded-br-2xl{% endif %} p-5 shadow-xl">
+                    <p
+                        class="text-[10px] uppercase font-bold tracking-widest mb-2 {% if msg.sender == user %}text-indigo-200{% else %}text-slate-400{% endif %}">
+                        {{ msg.sender.full_name }} • {{ msg.timestamp|time:"H:i" }}
+                    </p>
+                    <p class="text-sm font-medium leading-relaxed">{{ msg.content }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-10">
+                <p class="text-slate-400 italic text-sm">No messages yet. Send a reply below!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Reply Form -->
+    <div class="bg-white p-6 rounded-3xl shadow-xl border border-slate-200 ring-1 ring-slate-200">
+        <form method="POST" action="{% url 'skill_requests:reply' skill_request.pk %}">
+            {% csrf_token %}
+            <div class="mb-4">
+                {{ message_form.content }}
+            </div>
+            <div class="flex justify-end">
+                <button type="submit"
+                    class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-slate-900 transition-all duration-300 shadow-xl flex items-center">
+                    <i class="fas fa-paper-plane mr-3 text-sm"></i> Send Reply
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

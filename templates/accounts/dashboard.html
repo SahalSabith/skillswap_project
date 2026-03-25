@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - SkillSwap{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+        <div>
+            <span class="inline-flex items-center space-x-1.5 bg-indigo-50 border border-indigo-100 py-1 px-3 rounded-full text-indigo-700 text-xs font-bold uppercase tracking-wider mb-6">
+                <i class="fas fa-chart-line text-[10px]"></i>
+                <span>User Dashboard</span>
+            </span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">Welcome, {{ user.full_name }}</h1>
+        </div>
+        <div class="flex items-center space-x-3">
+            <a href="{% url 'skills:create' %}" class="bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center hover:bg-slate-900 transition-all shadow-xl"><i class="fas fa-plus mr-3"></i> Add New Skill</a>
+            <a href="{% url 'accounts:edit_profile' %}" class="bg-white text-slate-700 px-6 py-3.5 rounded-2xl font-bold border border-slate-200 hover:bg-slate-50 transition-all shadow-sm flex items-center"><i class="fas fa-user-edit mr-3"></i> Edit Profile</a>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div class="space-y-8">
+            <h2 class="text-2xl font-bold text-slate-900 flex items-center">
+                <i class="fas fa-inbox mr-3 text-indigo-600"></i> Received Requests
+                <span class="ml-4 px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-500 shadow-sm">{{ received_requests|length }}</span>
+            </h2>
+            <div class="space-y-4">
+                {% for req in received_requests %}
+                <a href="{% url 'skill_requests:detail' req.pk %}" class="block bg-white p-6 rounded-3xl border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 border border-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition-colors overflow-hidden">
+                                {% if req.sender.profile.avatar %}<img src="{{ req.sender.profile.avatar.url }}" class="w-full h-full object-cover">
+                                {% else %}<i class="fas fa-user text-xl"></i>{% endif %}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{{ req.sender.full_name }}</h4>
+                                <p class="text-sm text-slate-500 font-medium">wants <span class="text-slate-900 font-bold">{{ req.skill.name }}</span></p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 bg-slate-50 text-[10px] font-bold uppercase rounded-lg border border-slate-100 tracking-widest">{{ req.get_status_display }}</span>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-16 text-center">
+                    <p class="text-slate-400 font-medium italic">You haven't received any requests yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="space-y-8">
+            <h2 class="text-2xl font-bold text-slate-900 flex items-center">
+                <i class="fas fa-paper-plane mr-3 text-indigo-600"></i> Sent Requests
+                <span class="ml-4 px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-500 shadow-sm">{{ sent_requests|length }}</span>
+            </h2>
+            <div class="space-y-4">
+                {% for req in sent_requests %}
+                <a href="{% url 'skill_requests:detail' req.pk %}" class="block bg-white p-6 rounded-3xl border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 border border-slate-100 group-hover:bg-indigo-600 group-hover:text-white transition-colors overflow-hidden">
+                                {% if req.receiver.profile.avatar %}<img src="{{ req.receiver.profile.avatar.url }}" class="w-full h-full object-cover">
+                                {% else %}<i class="fas fa-user-graduate text-xl"></i>{% endif %}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Request for {{ req.skill.name }}</h4>
+                                <p class="text-sm text-slate-500 font-medium italic">Sent to <span class="text-slate-900 font-bold">{{ req.receiver.full_name }}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mt-6 pt-4 border-t border-slate-50">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{{ req.created_at|date:"M d, Y" }}</span>
+                        <span class="text-xs font-bold {% if req.status == 'A' %}text-green-600{% elif req.status == 'R' %}text-red-600{% else %}text-amber-600{% endif %}">{{ req.get_status_display }}</span>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl p-16 text-center">
+                    <p class="text-slate-400 font-medium italic">Browse skills and send your first request!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

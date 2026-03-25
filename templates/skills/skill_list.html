@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Explore Skills - SkillSwap{% endblock %}
+{% block content %}
+<div class="bg-indigo-600 py-20 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold text-white sm:text-5xl tracking-tight mb-8">Discover Your Next Skill</h1>
+            <div class="max-w-2xl mx-auto">
+                <form method="GET" action="{% url 'skills:list' %}" class="flex flex-col sm:flex-row gap-4 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
+                    <div class="relative flex-grow">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-white/60"></i>
+                        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search skills (e.g. Python, Design)" class="w-full bg-transparent text-white placeholder-white/60 pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/40 border-none transition-all">
+                    </div>
+                    <button type="submit" class="bg-white text-indigo-600 font-bold px-8 py-3 rounded-xl hover:bg-slate-900 hover:text-white transition-all duration-300">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="flex flex-col lg:flex-row gap-12">
+        <aside class="w-full lg:w-64 space-y-10">
+            <div>
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-widest mb-6">Categories</h3>
+                <div class="space-y-2">
+                    <a href="{% url 'skills:list' %}" class="block px-4 py-2.5 rounded-xl text-sm font-medium {% if not request.GET.category %}bg-indigo-600 text-white shadow-lg{% else %}text-slate-500 hover:bg-slate-100{% endif %} transition-all duration-200">All Skills</a>
+                    {% for cat in categories %}
+                    <a href="?category={{ cat.slug }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="block px-4 py-2.5 rounded-xl text-sm font-medium {% if request.GET.category == cat.slug %}bg-indigo-600 text-white shadow-lg{% else %}text-slate-500 hover:bg-slate-100{% endif %} transition-all duration-200">{{ cat.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+        <div class="flex-grow">
+            {% if skills %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {% for skill in skills %}
+                <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <span class="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg uppercase tracking-wider">{{ skill.category.name }}</span>
+                            <span class="text-xs text-slate-400 font-medium italic">{{ skill.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-4">{{ skill.name }}</h3>
+                        <p class="text-slate-500 text-sm line-clamp-2 mb-8 leading-relaxed">{{ skill.description }}</p>
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center overflow-hidden border border-slate-200">
+                                    {% if skill.user.profile.avatar %}
+                                    <img src="{{ skill.user.profile.avatar.url }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                    <i class="fas fa-user text-slate-400"></i>
+                                    {% endif %}
+                                </div>
+                                <span class="text-sm font-bold text-slate-700">{{ skill.user.full_name }}</span>
+                            </div>
+                            <a href="{{ skill.get_absolute_url }}" class="bg-slate-50 text-slate-700 font-bold px-4 py-2 rounded-xl border border-slate-200 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all duration-300">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if is_paginated %}
+            <div class="mt-16 flex justify-center space-x-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">Previous</a>
+                {% endif %}
+                <span class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold">{{ page_obj.number }}</span>
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors">Next</a>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                <i class="fas fa-search-minus text-3xl text-slate-400 mb-6 block"></i>
+                <h3 class="text-xl font-bold text-slate-900 mb-2 italic">Nothing Found</h3>
+                <p class="text-slate-500">Try adjusting your search filters or category.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - SkillSwap{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div class="text-center mb-24">
+        <h1 class="text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Our Mission</h1>
+        <p class="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed italic">Empowering students through
+            peer-to-peer knowledge exchange. Because we believe everyone has something valuable to teach, and something
+            new to learn.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+        <div
+            class="bg-white p-10 rounded-3xl shadow-xl border border-slate-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group">
+            <div
+                class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 text-2xl mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3
+                class="text-2xl font-bold text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors tracking-tight">
+                Community First</h3>
+            <p class="text-slate-500 leading-relaxed text-sm">We provide a space for students from various backgrounds
+                to connect and grow together through mutual learning.</p>
+        </div>
+        <div
+            class="bg-white p-10 rounded-3xl shadow-xl border border-slate-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group">
+            <div
+                class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 text-2xl mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <h3
+                class="text-2xl font-bold text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors tracking-tight">
+                Free To Join</h3>
+            <p class="text-slate-500 leading-relaxed text-sm">No membership fees, no paywalls. Just a student-led
+                platform built by students, for students. We value sharing knowledge above all.</p>
+        </div>
+        <div
+            class="bg-white p-10 rounded-3xl shadow-xl border border-slate-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group">
+            <div
+                class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 text-2xl mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h3
+                class="text-2xl font-bold text-slate-900 mb-4 group-hover:text-indigo-600 transition-colors tracking-tight">
+                Skills for Future</h3>
+            <p class="text-slate-500 leading-relaxed text-sm">Whether it's programming, design, music, or languages,
+                learning from peers is one of the most effective ways to grow.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
